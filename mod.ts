@@ -1,4 +1,5 @@
 import { Application, send } from "https://deno.land/x/oak/mod.ts";
+import api from "./api.ts";
 
 const app = new Application();
 const port = 8000;
@@ -16,6 +17,9 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${delta}ms`);
 });
 
+app.use(api.routes());
+app.use(api.allowedMethods());
+
 app.use(async (ctx, next) => {
   const filePath = ctx.request.url.pathname;
   const fileWhitelist = [
@@ -30,25 +34,6 @@ app.use(async (ctx, next) => {
       root: `${Deno.cwd()}/public`,
     });
   }
-});
-
-app.use((ctx) => {
-  ctx.response.body = `
-  o               .        ___---___                    .                   
-       .              .--\\        --.     .     .         .
-                    ./.;_.\\     __/~ \\.     
-                   /;  / .-'  __\\    . \\                            
- .        .       / ,--'     / .   .;   \\        |
-                 | .|       /       __   |      -O-       .
-                |__/    __ |  . ;   \\ | . |      |
-                |      /  \\\\_    . ;| \\___|    
-   .    o       |      \\  .~\\\\___,--'     |           .
-                 |     | . ; ~~~~\\_    __|
-    |             \\    \\   .  .  ; \\  /_/   .
-   -O-        .    \\   /         . |  ~/                  .
-    |    .          ~\\ \\   .      /  /~          o
-  .                   ~--___ ; ___--~       
-                 .          ---         .              -PLANETS API`;
 });
 
 if (import.meta.main) {
