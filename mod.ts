@@ -17,6 +17,20 @@ await log.setup({
   },
 });
 
+app.addEventListener("error", (event) => {
+  log.error(event.error.message);
+});
+
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    log.error(err.message);
+    ctx.response.body = "Internal server error";
+    throw err;
+  }
+});
+
 app.use(async (ctx, next) => {
   await next();
   log.info(ctx.request.url.href);

@@ -21,8 +21,9 @@ router.get("/", (ctx) => {
   .                   ~--___ ; ___--~       
                  .          ---         .              -PLANETS API`;
 })
-  .get("/planets", ({ response }) => {
-    response.body = getAllPlanets();
+  .get("/planets", (ctx) => {
+    ctx.throw(501, "sorry planets not available");
+    ctx.response.body = getAllPlanets();
   });
 
 export default router;
