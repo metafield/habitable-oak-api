@@ -1,4 +1,5 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
+import { getAllPlanets } from "./models/Planets.ts";
 
 const router = new Router();
 
@@ -19,6 +20,9 @@ router.get("/", (ctx) => {
     |    .          ~\\ \\   .      /  /~          o
   .                   ~--___ ; ___--~       
                  .          ---         .              -PLANETS API`;
-});
+})
+  .get("/planets", ({ response }) => {
+    response.body = getAllPlanets();
+  });
 
 export default router;
