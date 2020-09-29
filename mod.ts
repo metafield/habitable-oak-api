@@ -1,13 +1,26 @@
 import { Application, send } from "https://deno.land/x/oak/mod.ts";
+import * as log from "https://deno.land/std/log/mod.ts";
 import api from "./api.ts";
 
 const app = new Application();
 const port = 8000;
 
+await log.setup({
+  handlers: {
+    console: new log.handlers.ConsoleHandler("INFO"),
+  },
+  loggers: {
+    default: {
+      level: "INFO",
+      handlers: ["console"],
+    },
+  },
+});
+
 app.use(async (ctx, next) => {
   await next();
-  console.log(ctx.request.url.href);
-  console.log(`${ctx.request.method} request came in from ${ctx.request.ip}`);
+  log.info(ctx.request.url.href);
+  log.info(`${ctx.request.method} request came in from ${ctx.request.ip}`);
 });
 
 app.use(async (ctx, next) => {

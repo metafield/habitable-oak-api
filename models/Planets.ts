@@ -2,21 +2,16 @@ import { join } from "https://deno.land/std/path/mod.ts";
 import { BufReader } from "https://deno.land/std/io/bufio.ts";
 import { parse } from "https://deno.land/std/encoding/csv.ts";
 
-type Planet = {
-  [key: string]: string;
-};
+// type Planet = {
+//   [key: string]: string;
+// };
+
+type Planet = Record<string, string>;
 
 let planets: Planet[];
 
-async function loadPlanetsData() {
-  const path = join("data", "kepler_exoplanets_nasa.csv");
-
-  const file = await Deno.open(path);
-  const bufReader = new BufReader(file);
-  const result = await parse(bufReader, { header: true, comment: "#" });
-  Deno.close(file.rid);
-
-  const planets = (result as Planet[]).filter((planet) => {
+export function filterHabitablePlanets(planets: Planet[]): Planet[] {
+  const result = planets.filter((planet) => {
     const planetaryRadius = Number(planet["koi_prad"]);
     const stellarMass = Number(planet["koi_smass"]);
     const stellarRadius = Number(planet["koi_srad"]);
@@ -27,10 +22,21 @@ async function loadPlanetsData() {
       stellarRadius > 0.99 && stellarRadius < 1.01;
   });
 
-  return planets;
+  return result;
 }
 
-planets = await loadPlanetsData();
+async function loadPlanetsData() {
+  const path = join("data", "kepler_exoplanets_nasa.csv");
+
+  const file = await Deno.open(path);
+  const bufReader = new BufReader(file);
+  const planets = await parse(bufReader, { header: true, comment: "#" });
+  Deno.close(file.rid);
+
+  return planets as Planet[];
+}
+
+planets = filterHabitablePlanets(await loadPlanetsData());
 
 export function getAllPlanets() {
   return planets;
