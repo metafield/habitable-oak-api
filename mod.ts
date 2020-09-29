@@ -50,6 +50,7 @@ app.use(async (ctx, next) => {
 });
 
 if (import.meta.main) {
+  log.info(`🚀 launching server on port ${port} 🚀`);
   await app.listen({
     port,
   });
